@@ -1,6 +1,8 @@
 package controller;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -8,6 +10,7 @@ import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -15,20 +18,25 @@ import connection.ConnectionManager;
 import entity.EntityWorkDay;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import manger.TableMangaer;
+import sun.awt.WindowClosingListener;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.xml.crypto.Data;
 
 public class IndexController {
     @FXML
@@ -87,6 +95,17 @@ public class IndexController {
     @FXML
     private Tab workList;
 
+    @FXML
+    private AnchorPane apane;
+
+    public void setTable(TableView<EntityWorkDay> table) {
+        this.table = table;
+    }
+
+    public TableView<EntityWorkDay> getTable() {
+        return table;
+    }
+
     //   Baza dni tygodnia
     ObservableList<EntityWorkDay> dataBase = FXCollections.observableArrayList();
     protected static EntityWorkDay EditEntityWorkDay;
@@ -113,6 +132,18 @@ public class IndexController {
 
     }
 
+    protected void updateDataBeforeAddedRow() throws SQLException {
+        System.out.println("kupsko");
+        //        Pobranie danych encji
+        getDataEntity();
+//        Uzupełnienie tabeli godziny pracy
+        table.setItems(loadDataFromDB("SELECT * FROM work.workhour;"));
+
+//        Uzupełnienie pól sumujących godziny pracy
+        AssignmentOfAcolumnInAtableAoAColumnInadatabase();
+
+    }
+
     public static EntityWorkDay getEditEntityWorkDay() {
         return EditEntityWorkDay;
     }
@@ -123,7 +154,7 @@ public class IndexController {
     }
 
     // Główna metoda pobierająca informacje z bazy danych i wypełniająca tabele
-    private ObservableList<EntityWorkDay> loadDataFromDB(String sqlAction) throws SQLException {
+    public ObservableList<EntityWorkDay> loadDataFromDB(String sqlAction) throws SQLException {
         dataBase.clear();
 //        Tworzę obiekt do wypełnienia tabeli i przypisuje to do kolekcji
         try {
@@ -168,7 +199,20 @@ public class IndexController {
             stage.setTitle(title);
             stage.setScene(new Scene(root2));
             //            Blokada kliknięć macierzystego okna
-            stage.initModality(Modality.APPLICATION_MODAL);
+//            stage.initModality(Modality.APPLICATION_MODAL);
+//            stage.show();
+
+//            Aktualizacja danych po dodaniu
+            stage.setOnHidden(event -> {
+                try {
+                    initialize();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+//stage.setOnCloseRequest(event -> {
+//    System.out.println("pupa");
+
+            });
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -244,6 +288,7 @@ public class IndexController {
                 informationAboutFailureToAddToTheDatabase(e1, "Nie udało się wykonać instrukcji SQL");
             }
         });
+
     }
 
     private void sumCollumn(String collumn, Object month) throws SQLException {
@@ -351,6 +396,11 @@ public class IndexController {
         return entityWorkDay;
     }
 
+    public void replace(Stage primaryStage) {
+        primaryStage.setOnCloseRequest(e -> {
+            System.out.println("pulok");
+        });
+    }
 }
 
 

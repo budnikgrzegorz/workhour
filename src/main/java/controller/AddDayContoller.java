@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXTimePicker;
 import com.sun.org.apache.xerces.internal.impl.dv.xs.DateTimeDV;
 import connection.ConnectionManager;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -12,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
@@ -37,7 +39,7 @@ public class AddDayContoller {
     private Button beforebutton;
 
     @FXML
-    private  Label mainLabel;
+    private Label mainLabel;
 
     @FXML
     private Label labelFrom;
@@ -58,6 +60,9 @@ public class AddDayContoller {
     private JFXTimePicker toTimePicker;
 
 
+    IndexController indexController;
+
+
     // Zmienne które posłużą do nośnika danych za pomocą którego dane zostaną przekazane do bazy danych
     private Time startHourText = null;
     private Time endHourText = null;
@@ -65,6 +70,8 @@ public class AddDayContoller {
 
     @FXML
     void initialize() {
+
+
         fromDatePicker.setValue(LocalDate.now());
         fromTimePicker.setValue(LocalTime.now());
         toDatePicker.setValue(LocalDateTime.now().plusHours(8).toLocalDate());
@@ -92,6 +99,13 @@ public class AddDayContoller {
 
     private void closeWindow() {
         Stage stage = (Stage) addButton.getScene().getWindow();
+//        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+//            @Override
+//            public void handle(WindowEvent event) {
+//                System.out.println("so");
+//            }
+//        });
+
         stage.close();
     }
 
@@ -166,9 +180,11 @@ public class AddDayContoller {
 
     private void informationAboutAddingToTheDatabase() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Dodanie danie");
+        alert.setTitle("Dodanie dania");
         alert.setHeaderText("Dodanie dnia powiodło się!");
         alert.setContentText("Zapis wykoanny poprawnie");
+//        odswiezenie bazy danych po zamknięciu allertu
+
         alert.showAndWait();
     }
 
@@ -204,7 +220,6 @@ public class AddDayContoller {
         alert.getDialogPane().setExpandableContent(expContent);
         alert.showAndWait();
     }
-
 
 
     public Label getMainLabel() {
