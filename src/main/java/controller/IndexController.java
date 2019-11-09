@@ -132,17 +132,6 @@ public class IndexController {
 
     }
 
-    protected void updateDataBeforeAddedRow() throws SQLException {
-        System.out.println("kupsko");
-        //        Pobranie danych encji
-        getDataEntity();
-//        Uzupełnienie tabeli godziny pracy
-        table.setItems(loadDataFromDB("SELECT * FROM work.workhour;"));
-
-//        Uzupełnienie pól sumujących godziny pracy
-        AssignmentOfAcolumnInAtableAoAColumnInadatabase();
-
-    }
 
     public static EntityWorkDay getEditEntityWorkDay() {
         return EditEntityWorkDay;
@@ -189,7 +178,21 @@ public class IndexController {
 
     }
 
-    private void openAddWindow(String title, String path) {
+    //            Aktualizacja danych po dodaniu
+    private void updateTableBeforeAction(Stage stage, String s) {
+        stage.setOnHidden(event -> {
+            try {
+                initialize();
+            } catch (SQLException e) {
+                informationAboutFailureToAddToTheDatabase(e, s);
+                e.printStackTrace();
+            }
+
+
+        });
+    }
+
+    private void openAddWindow(String title, String path, String failureUpdateTitle, String failureOpeningTitle) {
 
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
@@ -198,29 +201,19 @@ public class IndexController {
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root2));
+
             //            Blokada kliknięć macierzystego okna
-//            stage.initModality(Modality.APPLICATION_MODAL);
-//            stage.show();
+            stage.initModality(Modality.APPLICATION_MODAL);
 
-//            Aktualizacja danych po dodaniu
-            stage.setOnHidden(event -> {
-                try {
-                    initialize();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-//stage.setOnCloseRequest(event -> {
-//    System.out.println("pupa");
-
-            });
+            updateTableBeforeAction(stage, failureUpdateTitle);
             stage.show();
         } catch (IOException e) {
+            informationAboutFailureToAddToTheDatabase(e, failureOpeningTitle);
             e.printStackTrace();
         }
-
     }
 
-
+    // Alert błędu z detalami
     private void informationAboutFailureToAddToTheDatabase(Exception e, String s) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Wystąpił błąd");
@@ -314,6 +307,7 @@ public class IndexController {
         addButton();
         editButton();
         deleteButton();
+        refreshButton();
     }
 
     private void deleteButton() {
@@ -360,12 +354,23 @@ public class IndexController {
         });
     }
 
+    private void refreshButton(){
+        od.setOnAction((event) -> {
+            try {
+                initialize();
+            } catch (SQLException e) {
+                informationAboutFailureToAddToTheDatabase(e, "Nie udało się odświrzyć tabeli.");
+                e.printStackTrace();
+            }
+        });
+    }
+
     private void editButton() {
         //        Otwarcie okna dodawania
 
 
         workHourEdit.setOnAction((event) -> {
-            openAddWindow("Edytuj dzień", "/editDay.fxml");
+            openAddWindow("Edytuj dzień", "/editDay.fxml", "Nie udało się zaktualizować tabeli po edycji", "Nie udało sie otworzyć okna edycji");
 //            System.out.println(table.getSelectionModel().getSelectedIndex());
 //            EntityWorkDay EntityWorkDay = table.getSelectionModel().getSelectedItem();
 //            editDayController editDayController = new editDayController();
@@ -378,7 +383,7 @@ public class IndexController {
     private void addButton() {
         //        Otwarcie okna dodawania
         workHourAdd.setOnAction((event) -> {
-            openAddWindow("Dodaj dzień", "/addDay.fxml");
+            openAddWindow("Dodaj dzień", "/addDay.fxml", "Nie udało się zaktualizować tabeli po dodaniu wiersza.", "Nie udało się otworzyć okna dodawania");
         });
     }
 
@@ -396,11 +401,7 @@ public class IndexController {
         return entityWorkDay;
     }
 
-    public void replace(Stage primaryStage) {
-        primaryStage.setOnCloseRequest(e -> {
-            System.out.println("pulok");
-        });
-    }
+
 }
 
 

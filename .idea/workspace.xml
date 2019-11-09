@@ -15,33 +15,32 @@
     <SUITE FILE_PATH="coverage/WorkHour$main.coverage" NAME="main Coverage Results" MODIFIED="1570395517680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.58008075">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="IndexController.java" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/main/java/controller/IndexController.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="391">
-                  <caret line="205" column="40" lean-forward="false" selection-start-line="205" selection-start-column="40" selection-end-line="205" selection-end-column="40" />
+                <state relative-caret-position="295">
+                  <caret line="309" column="24" lean-forward="true" selection-start-line="309" selection-start-column="24" selection-end-line="309" selection-end-column="24" />
                   <folding>
                     <element signature="imports" expanded="true" />
                     <element signature="method#initialize#0;class#IndexController#0" expanded="true" />
-                    <element signature="method#updateDataBeforeAddedRow#0;class#IndexController#0" expanded="true" />
                     <element signature="method#getDataEntity#0;class#IndexController#0" expanded="true" />
                     <element signature="method#loadDataFromDB#0;class#IndexController#0" expanded="true" />
                     <element signature="method#loadDataMonthFromDB#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#updateTableBeforeAction#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#openAddWindow#0;class#IndexController#0" expanded="true" />
                     <element signature="method#informationAboutFailureToAddToTheDatabase#0;class#IndexController#0" expanded="true" />
                     <element signature="method#AssignmentOfAcolumnInAtableAoAColumnInadatabase#0;class#IndexController#0" expanded="true" />
                     <element signature="method#AssigningAvalueToTheListOfMonths#0;class#IndexController#0" expanded="true" />
                     <element signature="method#sumCollumn#0;class#IndexController#0" expanded="true" />
-                    <element signature="method#ButtonOperation#0;class#IndexController#0" expanded="true" />
                     <element signature="method#deleteButton#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#refreshButton#0;class#IndexController#0" expanded="true" />
                     <element signature="method#editButton#0;class#IndexController#0" expanded="true" />
                     <element signature="method#addButton#0;class#IndexController#0" expanded="true" />
                     <element signature="method#shortAlertinformation#0;class#IndexController#0" expanded="true" />
                     <element signature="method#selectedEntity#0;class#IndexController#0" expanded="true" />
-                    <element signature="method#replace#0;class#IndexController#0" expanded="true" />
-                    <marker date="1573295783861" expanded="true" signature="6521:6535" ph="{...}" />
                   </folding>
                 </state>
               </provider>
@@ -51,10 +50,38 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="AddDayContoller.java" pinned="false" current-in-tab="true">
+          <file leaf-file-name="IndexController.java" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/main/java/controller/IndexController.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="3134">
+                  <caret line="332" column="25" lean-forward="false" selection-start-line="332" selection-start-column="20" selection-end-line="332" selection-end-column="25" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                    <element signature="method#initialize#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#getDataEntity#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#loadDataFromDB#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#loadDataMonthFromDB#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#updateTableBeforeAction#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#openAddWindow#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#informationAboutFailureToAddToTheDatabase#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#AssignmentOfAcolumnInAtableAoAColumnInadatabase#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#AssigningAvalueToTheListOfMonths#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#sumCollumn#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#ButtonOperation#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#refreshButton#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#editButton#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#addButton#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#shortAlertinformation#0;class#IndexController#0" expanded="true" />
+                    <element signature="method#selectedEntity#0;class#IndexController#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="AddDayContoller.java" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/controller/AddDayContoller.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="210">
+                <state relative-caret-position="221">
                   <caret line="186" column="0" lean-forward="false" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
                   <folding>
                     <element signature="imports" expanded="true" />
@@ -103,12 +130,13 @@
       <find>getData</find>
       <find>loadDataMonthF</find>
       <find>path</find>
-      <find>open</find>
       <find>database</find>
       <find>loadDataFrom</find>
       <find>close</find>
       <find>add</find>
       <find>addD</find>
+      <find>open</find>
+      <find>Button</find>
     </findStrings>
     <replaceStrings>
       <replace>EntityWorkDay</replace>
@@ -407,7 +435,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16207276" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16207276" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -678,19 +706,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/index.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="73" lean-forward="false" selection-start-line="24" selection-start-column="73" selection-end-line="24" selection-end-column="73" />
-          <folding>
-            <marker date="1570371655712" expanded="true" signature="2878:3721" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controller/BasicController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -817,6 +832,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="203">
           <caret line="1502" column="0" lean-forward="false" selection-start-line="1502" selection-start-column="0" selection-end-line="1502" selection-end-column="0" />
+          <folding>
+            <element signature="method#charAt#0;class#String#0" expanded="false" />
+            <element signature="e#58518#58519#0" expanded="false" />
+            <element signature="method#indexOf#1;class#String#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -864,7 +884,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controller/AddDayContoller.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
+        <state relative-caret-position="221">
           <caret line="186" column="0" lean-forward="false" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -882,29 +902,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/index.fxml">
+      <provider selected="true" editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="29" column="44" lean-forward="false" selection-start-line="29" selection-start-column="44" selection-end-line="29" selection-end-column="44" />
+          <folding>
+            <marker date="1570371655712" expanded="true" signature="2878:3721" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/controller/IndexController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="205" column="40" lean-forward="false" selection-start-line="205" selection-start-column="40" selection-end-line="205" selection-end-column="40" />
+        <state relative-caret-position="295">
+          <caret line="309" column="24" lean-forward="true" selection-start-line="309" selection-start-column="24" selection-end-line="309" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#initialize#0;class#IndexController#0" expanded="true" />
-            <element signature="method#updateDataBeforeAddedRow#0;class#IndexController#0" expanded="true" />
             <element signature="method#getDataEntity#0;class#IndexController#0" expanded="true" />
             <element signature="method#loadDataFromDB#0;class#IndexController#0" expanded="true" />
             <element signature="method#loadDataMonthFromDB#0;class#IndexController#0" expanded="true" />
+            <element signature="method#updateTableBeforeAction#0;class#IndexController#0" expanded="true" />
+            <element signature="method#openAddWindow#0;class#IndexController#0" expanded="true" />
             <element signature="method#informationAboutFailureToAddToTheDatabase#0;class#IndexController#0" expanded="true" />
             <element signature="method#AssignmentOfAcolumnInAtableAoAColumnInadatabase#0;class#IndexController#0" expanded="true" />
             <element signature="method#AssigningAvalueToTheListOfMonths#0;class#IndexController#0" expanded="true" />
             <element signature="method#sumCollumn#0;class#IndexController#0" expanded="true" />
-            <element signature="method#ButtonOperation#0;class#IndexController#0" expanded="true" />
             <element signature="method#deleteButton#0;class#IndexController#0" expanded="true" />
+            <element signature="method#refreshButton#0;class#IndexController#0" expanded="true" />
             <element signature="method#editButton#0;class#IndexController#0" expanded="true" />
             <element signature="method#addButton#0;class#IndexController#0" expanded="true" />
             <element signature="method#shortAlertinformation#0;class#IndexController#0" expanded="true" />
             <element signature="method#selectedEntity#0;class#IndexController#0" expanded="true" />
-            <element signature="method#replace#0;class#IndexController#0" expanded="true" />
-            <marker date="1573295783861" expanded="true" signature="6521:6535" ph="{...}" />
           </folding>
         </state>
       </provider>
