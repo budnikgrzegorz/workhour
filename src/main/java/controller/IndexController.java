@@ -1,8 +1,5 @@
 package controller;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,7 +7,6 @@ import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -18,7 +14,6 @@ import connection.ConnectionManager;
 import entity.EntityWorkDay;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -30,13 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import manger.TableMangaer;
-import sun.awt.WindowClosingListener;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.xml.crypto.Data;
+import org.hibernate.loader.Loader;
 
 public class IndexController {
     @FXML
@@ -98,6 +87,14 @@ public class IndexController {
     @FXML
     private AnchorPane apane;
 
+    EntityWorkDay entityWorkDay = null;
+
+    //    Przypisanie zmiennej wartości domyślnej - aktualny miesiąc - FLAGA
+    private Month month = LocalDate.now().getMonth();
+
+    //    Zmienna flagujaca zaznaczoną pozycję za pomocą id bazy danych
+    private int index = 0;
+
     public void setTable(TableView<EntityWorkDay> table) {
         this.table = table;
     }
@@ -113,24 +110,63 @@ public class IndexController {
     @FXML
     void initialize() throws SQLException {
 
-
-//        Uzupełnienie tabeli godziny pracy
-        table.setItems(loadDataFromDB("SELECT * FROM work.workhour;"));
-
-//        Uzupełnienie pól sumujących godziny pracy
-        AssignmentOfAcolumnInAtableAoAColumnInadatabase();
-
+//        Metoda pobierająca dane z bazy i uzupełniająca tabele
+        assignmentOfAcolumnInAtableAoAColumnInadatabase("Nie udało się pobrać danych z bazy i uzupełnić tabeli.");
 
 //        Uzypełnienie listy miesięcy
-        AssigningAvalueToTheListOfMonths();
+        assigningAvalueToTheListOfMonths();
 
 //       Obsługa przycisków
         ButtonOperation();
 
-//        Pobranie danych encji
-        getDataEntity();
+//        Sprawdzanie czy wiersz jest zaznaczony
+
+        selectionRowListener();
 
     }
+
+    private void selectionRowListener() {
+//        Wartość domyślna
+        editButton(2);
+
+//        Listener zaznaczonego wiersza
+        table.getSelectionModel().selectedItemProperty().addListener((observable) -> {
+//            EntityWorkDay entityWorkDay = new EntityWorkDay();
+            editButton(1);
+            entityWorkDay = this.entityWorkDay;
+
+            entityWorkDay = table.getSelectionModel().getSelectedItem();
+            System.out.println(entityWorkDay);
+            if (entityWorkDay != null) {
+                editButton(1);
+//                EditDayController.editableEntityWorkDay(entityWorkDay.getHourTableDayId(),entityWorkDay.getHourTableFrom(),entityWorkDay.getHourTableTo(),entityWorkDay.getHourTableWorkHour(),entityWorkDay.getHourTableNadgodziny());
+
+            } else {
+                editButton(2);
+            }
+        });
+
+    }
+//    private void selectionRowListener() {
+//
+//        table.getSelectionModel().selectedItemProperty().addListener((observable) -> {
+//            EntityWorkDay entityWorkDay = new EntityWorkDay();
+//          entityWorkDay = table.getSelectionModel().getSelectedItem();
+//            System.out.println(entityWorkDay);
+//            if(entityWorkDay != null){
+//                editButton();
+//                System.out.println("dupa");
+//            }else {
+//                shortAlertinformation(Alert.AlertType.ERROR,"Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
+//                        "zaznaczyć wiersz który ma być usunięty.");
+//                System.out.println("kupa");
+//            }
+////            System.out.println(observable.toString() + "obs");
+////            System.out.println(table.getSelectionModel().getSelectedItem().getHourTableDayId());
+////
+//        });
+//
+//    }
 
 
     public static EntityWorkDay getEditEntityWorkDay() {
@@ -142,21 +178,21 @@ public class IndexController {
         return EntityWorkDay;
     }
 
+
     // Główna metoda pobierająca informacje z bazy danych i wypełniająca tabele
     public ObservableList<EntityWorkDay> loadDataFromDB(String sqlAction) throws SQLException {
         dataBase.clear();
 //        Tworzę obiekt do wypełnienia tabeli i przypisuje to do kolekcji
         try {
             Connection connection = ConnectionManager.getConnection();
-//            Przekompilowana i przchowywana instrukcja SQL - może być urzyta wiele razy
-//            PreparedStatement preparedStatement = connection.prepareStatement("SELECT `hourTableDayId`, CAST(`hourTableFrom` as time) AS " + "hourTableFrom " + " ,CAST(`hourTableTo` as time) AS "+ "hourTableTo " +" ,CAST(`hourTableWorkHour` as time)    AS " + "hourTableWorkHour " + " ,CAST( `hourTableNadgodziny` as time) AS " + "hourTableNadgodziny " + " ,CAST( `hourTableDay` as date) AS " +"hourTableDay " + "FROM work.workhour");
             PreparedStatement preparedStatement = connection.prepareStatement(sqlAction);
-//            Reprezentuje zestaw wyników bazy danych
+
+            //            Reprezentuje zestaw wyników bazy danych
             ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
 
                 dataBase.addAll(new EntityWorkDay(rs.getInt("hourTableDayId"), rs.getTimestamp("hourTableFrom"), rs.getTimestamp("hourTableTo"), rs.getString("hourTableWorkhour"), rs.getString("hourTableNadgodziny")));
-                System.out.println(dataBase);
+
             }
             return dataBase;
         } catch (SQLException e) {
@@ -179,25 +215,17 @@ public class IndexController {
     }
 
     //            Aktualizacja danych po dodaniu
-    private void updateTableBeforeAction(Stage stage, String s) {
-        stage.setOnHidden(event -> {
-            try {
-                initialize();
-            } catch (SQLException e) {
-                informationAboutFailureToAddToTheDatabase(e, s);
-                e.printStackTrace();
-            }
-
-
+    private void updateTableBeforeAction(Stage stage, String titleException) {
+                stage.setOnHidden(event -> {
+            assignmentOfAcolumnInAtableAoAColumnInadatabase(titleException);
         });
     }
 
-    private void openAddWindow(String title, String path, String failureUpdateTitle, String failureOpeningTitle) {
-
+    private FXMLLoader openAddWindow(String title, String path, String failureUpdateTitle, String failureOpeningTitle) {
+        FXMLLoader fxmlLoader = new FXMLLoader();
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(path));
+            fxmlLoader = new FXMLLoader(getClass().getResource(path));
             Parent root2 = (Parent) fxmlLoader.load();
-
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root2));
@@ -207,10 +235,12 @@ public class IndexController {
 
             updateTableBeforeAction(stage, failureUpdateTitle);
             stage.show();
+            return fxmlLoader;
         } catch (IOException e) {
             informationAboutFailureToAddToTheDatabase(e, failureOpeningTitle);
             e.printStackTrace();
         }
+        return fxmlLoader;
     }
 
     // Alert błędu z detalami
@@ -247,29 +277,37 @@ public class IndexController {
         alert.showAndWait();
     }
 
-    private void AssignmentOfAcolumnInAtableAoAColumnInadatabase() throws SQLException {
+    private void assignmentOfAcolumnInAtableAoAColumnInadatabase(String exceptionTitle) {
+        this.month = month;
         //        Zsumowanie godzin
-        sumCollumn("hourTableNadgodziny", "month(curdate())");
-        sumCollumn("hourTableWorkHour", "month(curdate())");
+        try {
+            sumCollumn("hourTableNadgodziny", month.getValue());
+            sumCollumn("hourTableWorkHour", month.getValue());
 
 
-        //        Przypisanie kolum w dabeli kolumną w bazie danych
-//        hourTableDayId.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, String>("hourTableDayId"));
+            //        Przypisanie kolum w dabeli kolumną w bazie danych
+            hourTableFrom.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, Timestamp>("hourTableFrom"));
+            hourTableTo.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, Timestamp>("hourTableTo"));
+            hourTableWorkHour.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, String>("hourTableWorkHour"));
+            hourTableNadgodziny.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, String>("hourTableNadgodziny"));
 
-        hourTableFrom.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, Timestamp>("hourTableFrom"));
-        hourTableTo.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, Timestamp>("hourTableTo"));
-        hourTableWorkHour.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, String>("hourTableWorkHour"));
-        hourTableNadgodziny.setCellValueFactory(new PropertyValueFactory<EntityWorkDay, String>("hourTableNadgodziny"));
-
-        //     Wypełnienie tabeli bazą danych
-        table.setItems(loadDataFromDB("select * FROM work.workhour where  month(`hourTableFrom`) = month(curdate());"));
+            //     Wypełnienie tabeli bazą danych
+            table.setItems(loadDataFromDB("select * FROM work.workhour where  month(`hourTableFrom`) = " + month.getValue() + ";"));
+        } catch (SQLException e) {
+            informationAboutFailureToAddToTheDatabase(e, exceptionTitle);
+            e.printStackTrace();
+        }
     }
 
-    private void AssigningAvalueToTheListOfMonths() {
+    private void assigningAvalueToTheListOfMonths() {
 //       Wypełnienie Listview wartościami miesięcy
         hourMonth.getItems().addAll(loadDataMonthFromDB());
 //Przypisanie listenera do przycisków
         hourMonth.getSelectionModel().selectedItemProperty().addListener(event -> {
+
+// Ustalenie wartości parametru "month"
+            this.month = month;
+            month = hourMonth.getSelectionModel().getSelectedItem();
 
             String sqlParameter = "select * FROM work.workhour where  month(`hourTableFrom`) = " + hourMonth.getSelectionModel().getSelectedItem().getValue() + ";";
             int sqlParameterMonth = hourMonth.getSelectionModel().getSelectedItem().getValue();
@@ -305,36 +343,65 @@ public class IndexController {
 
     private void ButtonOperation() {
         addButton();
-        editButton();
         deleteButton();
         refreshButton();
+    }
+
+    //    Zapisanie do stringa zaznaczongeo wierza w tabeli.
+    private String printSelectedRow() {
+
+        String id = String.valueOf(table.getSelectionModel().getSelectedItem().getHourTableDayId());
+        String rozpoczecie = table.getSelectionModel().getSelectedItem().getHourTableFrom().toString();
+        String zakonczenie = table.getSelectionModel().getSelectedItem().getHourTableTo().toString();
+        String liczbaGodzin = table.getSelectionModel().getSelectedItem().getHourTableWorkHour().toString();
+        String liczbaNadgodzin = table.getSelectionModel().getSelectedItem().getHourTableNadgodziny().toString();
+        String newLine = System.getProperty("line.separator");
+        StringBuilder stringBuilder = new StringBuilder("id = ");
+        String printedString = stringBuilder.append(id).append(newLine).append("Rozpoczęcie pracy = ").append(rozpoczecie).append(newLine).append("Zakończenie pracy = ").append(zakonczenie).append(newLine).append("Liczba godzin pracy = ").append(liczbaGodzin).append(newLine).append("Liczba nadgodzin = ").append(liczbaNadgodzin).toString();
+
+        return printedString;
+    }
+
+
+    private int flagSelectedRow(String title, String header, String content) {
+        this.index = index;
+        boolean flag = false;
+        //           Pobranie indexu zaznaczonego wiersza
+        try {
+
+
+            index = table.getSelectionModel().getSelectedItem().getHourTableDayId();
+        } catch (Exception e) {
+//                    Wywołanie informacji o błędzie nie zaznaczenia wiersza
+            shortAlertinformation(Alert.AlertType.ERROR, title,
+                    header,
+                    content);
+
+        }
+
+        return index;
     }
 
     private void deleteButton() {
 
         //        Otwarcie okna dodawania
         workHourDelete.setOnAction((event) -> {
-            int index = 0;
+
+
+            flagSelectedRow("Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
+                    "zaznaczyć wiersz który ma być usunięty.");
+
+
 //            Otwarcia okna allertu
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Usuwanie rekordu");
-            alert.setHeaderText("Data");
+            alert.setHeaderText(printSelectedRow());
             alert.setContentText("Czy na pewno chcesz usunąć rekord ?");
 
 //            Obsługa zdarzenia usunięcia rekordu
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
 
-//           Pobranie indexu zaznaczonego wiersza
-                try {
-                    index = table.getSelectionModel().getSelectedItem().getHourTableDayId();
-                } catch (NullPointerException e) {
-//                    Wywołanie informacji o błędzie nie zaznaczenia wiersza
-                    shortAlertinformation(Alert.AlertType.ERROR, "Błąd!",
-                            "Brak zaznaczonego wiersza.",
-                            "Przed wykoneniem polecenia muszisz " +
-                                    "zaznaczyć wiersz który ma być usunięty.");
-                }
 
 //           Sprawdzenie czy został zaznaczony wiersz
                 try {
@@ -343,8 +410,11 @@ public class IndexController {
                     Connection connection = ConnectionManager.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement("delete FROM work.workhour where hourTableDayId = " + index + ";");
                     preparedStatement.execute();
-                    shortAlertinformation(Alert.AlertType.INFORMATION, "Usuwanie", "Usunięcie wiersza powiodło się."
-                            , table.getSelectionModel().getSelectedItem().toString());
+                    shortAlertinformation(Alert.AlertType.INFORMATION, "Usuwanie", "Usunięcie wiersza powiodło się.", printSelectedRow());
+
+                    //                    Aktualizacja tabeli.
+                    assignmentOfAcolumnInAtableAoAColumnInadatabase("Nie udało się zaktualizować tabeli po usunięciu wiersza.");
+                    index = 0;
 
                 } catch (SQLException e) {
                     informationAboutFailureToAddToTheDatabase(e, "Nie udało się nawiązać połączenia");
@@ -354,30 +424,40 @@ public class IndexController {
         });
     }
 
-    private void refreshButton(){
+
+    private void refreshButton() {
+
         od.setOnAction((event) -> {
-            try {
-                initialize();
-            } catch (SQLException e) {
-                informationAboutFailureToAddToTheDatabase(e, "Nie udało się odświrzyć tabeli.");
-                e.printStackTrace();
-            }
+            assignmentOfAcolumnInAtableAoAColumnInadatabase("Nie udało się odświeżyć tabeli.");
         });
     }
 
-    private void editButton() {
-        //        Otwarcie okna dodawania
-
-
+    private void editButtonOnNotSelectedRow() {
         workHourEdit.setOnAction((event) -> {
-            openAddWindow("Edytuj dzień", "/editDay.fxml", "Nie udało się zaktualizować tabeli po edycji", "Nie udało sie otworzyć okna edycji");
-//            System.out.println(table.getSelectionModel().getSelectedIndex());
-//            EntityWorkDay EntityWorkDay = table.getSelectionModel().getSelectedItem();
-//            editDayController editDayController = new editDayController();
-//           editDayController.setEntityWorkDay(EntityWorkDay);
-
-//            "UPDATE `work`.`workhour` SET `hourTableFrom` = '" + dsfsd +"', `hourTableTo` = '" + ds + "', `hourTableWorkHour` = '" + ds + "', `hourTableNadgodziny` = '" + ds + ""' WHERE (`hourTableDayId` = '8');
+            shortAlertinformation(Alert.AlertType.ERROR, "Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
+                    "zaznaczyć wiersz który ma być usunięty.");
         });
+    }
+
+    private void editButton(int number) {
+//        Opcja przy zaznaczonym wierszu
+        if (number == 1) {
+            workHourEdit.setOnAction((event) -> {
+
+             EditDayController editDayController =  openAddWindow("Edytuj dzień", "/editDay.fxml", "Nie udało się zaktualizować tabeli po edycji", "Nie udało sie otworzyć okna edycji").getController();
+             editDayController.editMethod(table.getSelectionModel().getSelectedItem());
+             editDayController.initialize();
+            });
+
+//            Opcja przy niezaznaczonym wierszu
+        } else if (number == 2) {
+            workHourEdit.setOnAction((event1) -> {
+                shortAlertinformation(Alert.AlertType.ERROR, "Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
+                        "zaznaczyć wiersz który ma być usunięty.");
+            });
+
+        }
+
     }
 
     private void addButton() {

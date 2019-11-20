@@ -6,11 +6,17 @@ import entity.EntityWorkDay;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import lombok.Setter;
+import org.joda.time.Hours;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Setter
 public class EditDayController {
 
 
@@ -39,20 +45,23 @@ public class EditDayController {
     private Button beforebutton;
 
 
-
-    public EntityWorkDay EntityWorkDay;
+    public static EntityWorkDay entityWorkDay;
 
     @FXML
     void initialize() {
+
     }
 
-    public void editMethod() {
-        EntityWorkDay = getEntityWorkDay();
-        fromDatePicker.setValue(LocalDate.from(EntityWorkDay.getHourTableFrom().toLocalDateTime()));
-        fromTimePicker.setValue(LocalTime.ofSecondOfDay(EntityWorkDay.getHourTableFrom().getTime()));
-        toDatePicker.setValue(LocalDate.from(EntityWorkDay.getHourTableTo().toLocalDateTime()));
-        toTimePicker.setValue(LocalTime.ofSecondOfDay(EntityWorkDay.getHourTableTo().getTime()));
+    public void editMethod(EntityWorkDay entityWorkDay) {
+        Timestamp timestampFrom = entityWorkDay.getHourTableFrom();
+        Timestamp timestampTo = entityWorkDay.getHourTableTo();
 
+        fromDatePicker.setValue(LocalDate.from(entityWorkDay.getHourTableFrom().toLocalDateTime()));
+        fromTimePicker.setValue(LocalTime.from(entityWorkDay.getHourTableFrom().toLocalDateTime()));
+        toDatePicker.setValue(LocalDate.from(entityWorkDay.getHourTableTo().toLocalDateTime()));
+        toTimePicker.setValue(LocalTime.from(entityWorkDay.getHourTableTo().toLocalDateTime()));
+        System.out.println(entityWorkDay.toString());
+        System.out.println(IndexController.getEditEntityWorkDay().toString());
 //        "UPDATE `work`.`workhour` SET `hourTableFrom` = '" + +"', `hourTableTo` = '" + ds + "', `hourTableWorkHour` = '" + ds + "', `hourTableNadgodziny` = '" + ds + ""
 //        ' WHERE (`hourTableDayId` = ' 8 ');
 
@@ -63,7 +72,17 @@ public class EditDayController {
     }
 
     public entity.EntityWorkDay getEntityWorkDay() {
-        return EntityWorkDay;
+        return entityWorkDay;
     }
+
+    protected static EntityWorkDay editableEntityWorkDay(int id, Timestamp from, Timestamp to, String workHour, String nadgodziny) {
+        entityWorkDay.setHourTableDayId(id);
+        entityWorkDay.setHourTableFrom(from);
+        entityWorkDay.setHourTableTo(to);
+        entityWorkDay.setHourTableNadgodziny(nadgodziny);
+        entityWorkDay.setHourTableWorkHour(workHour);
+        return entityWorkDay;
+    }
+
 
 }
