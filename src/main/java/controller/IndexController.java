@@ -25,8 +25,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.loader.Loader;
 
+
+@Getter
+@Setter
 public class IndexController {
     @FXML
     private ResourceBundle resources;
@@ -95,13 +100,13 @@ public class IndexController {
     //    Zmienna flagujaca zaznaczoną pozycję za pomocą id bazy danych
     private int index = 0;
 
-    public void setTable(TableView<EntityWorkDay> table) {
-        this.table = table;
-    }
-
-    public TableView<EntityWorkDay> getTable() {
-        return table;
-    }
+//    public void setTable(TableView<EntityWorkDay> table) {
+//        this.table = table;
+//    }
+//
+//    public TableView<EntityWorkDay> getTable() {
+//        return table;
+//    }
 
     //   Baza dni tygodnia
     ObservableList<EntityWorkDay> dataBase = FXCollections.observableArrayList();
@@ -120,9 +125,7 @@ public class IndexController {
         ButtonOperation();
 
 //        Sprawdzanie czy wiersz jest zaznaczony
-
         selectionRowListener();
-
     }
 
     private void selectionRowListener() {
@@ -134,48 +137,13 @@ public class IndexController {
 //            EntityWorkDay entityWorkDay = new EntityWorkDay();
             editButton(1);
             entityWorkDay = this.entityWorkDay;
-
             entityWorkDay = table.getSelectionModel().getSelectedItem();
-            System.out.println(entityWorkDay);
             if (entityWorkDay != null) {
                 editButton(1);
-//                EditDayController.editableEntityWorkDay(entityWorkDay.getHourTableDayId(),entityWorkDay.getHourTableFrom(),entityWorkDay.getHourTableTo(),entityWorkDay.getHourTableWorkHour(),entityWorkDay.getHourTableNadgodziny());
-
             } else {
                 editButton(2);
             }
         });
-
-    }
-//    private void selectionRowListener() {
-//
-//        table.getSelectionModel().selectedItemProperty().addListener((observable) -> {
-//            EntityWorkDay entityWorkDay = new EntityWorkDay();
-//          entityWorkDay = table.getSelectionModel().getSelectedItem();
-//            System.out.println(entityWorkDay);
-//            if(entityWorkDay != null){
-//                editButton();
-//                System.out.println("dupa");
-//            }else {
-//                shortAlertinformation(Alert.AlertType.ERROR,"Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
-//                        "zaznaczyć wiersz który ma być usunięty.");
-//                System.out.println("kupa");
-//            }
-////            System.out.println(observable.toString() + "obs");
-////            System.out.println(table.getSelectionModel().getSelectedItem().getHourTableDayId());
-////
-//        });
-//
-//    }
-
-
-    public static EntityWorkDay getEditEntityWorkDay() {
-        return EditEntityWorkDay;
-    }
-
-    private EntityWorkDay getDataEntity() {
-        EntityWorkDay EntityWorkDay = table.getSelectionModel().getSelectedItem();
-        return EntityWorkDay;
     }
 
 
@@ -211,12 +179,11 @@ public class IndexController {
                 Month.NOVEMBER, Month.DECEMBER);
 
         return dataBase2;
-
     }
 
     //            Aktualizacja danych po dodaniu
     private void updateTableBeforeAction(Stage stage, String titleException) {
-                stage.setOnHidden(event -> {
+        stage.setOnHidden(event -> {
             assignmentOfAcolumnInAtableAoAColumnInadatabase(titleException);
         });
     }
@@ -281,6 +248,7 @@ public class IndexController {
         this.month = month;
         //        Zsumowanie godzin
         try {
+            System.out.println(month.toString());
             sumCollumn("hourTableNadgodziny", month.getValue());
             sumCollumn("hourTableWorkHour", month.getValue());
 
@@ -324,6 +292,9 @@ public class IndexController {
 
     private void sumCollumn(String collumn, Object month) throws SQLException {
         Connection connection = null;
+        System.out.println(connection + "sum connection");
+        System.out.println(month.toString());
+        System.out.println(collumn.toString());
         try {
             connection = ConnectionManager.getConnection();
         } catch (SQLException e) {
@@ -335,6 +306,7 @@ public class IndexController {
         String sum = rs.getString(1);
         if (collumn == "hourTableNadgodziny") {
             NadHourSum.setText(sum);
+
         } else {
             hourSum.setText(sum);
         }
@@ -444,10 +416,11 @@ public class IndexController {
         if (number == 1) {
             workHourEdit.setOnAction((event) -> {
 
-             EditDayController editDayController =  openAddWindow("Edytuj dzień", "/editDay.fxml", "Nie udało się zaktualizować tabeli po edycji", "Nie udało sie otworzyć okna edycji").getController();
-             editDayController.editMethod(table.getSelectionModel().getSelectedItem());
-             editDayController.initialize();
+                EditDayController editDayController = openAddWindow("Edytuj dzień", "/editDay.fxml", "Nie udało się zaktualizować tabeli po edycji", "Nie udało sie otworzyć okna edycji").getController();
+                editDayController.editMethod(table.getSelectionModel().getSelectedItem());
+                editDayController.setEntityWorkDay(table.getSelectionModel().getSelectedItem());
             });
+
 
 //            Opcja przy niezaznaczonym wierszu
         } else if (number == 2) {

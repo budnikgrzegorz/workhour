@@ -99,13 +99,6 @@ public class AddDayContoller {
 
     private void closeWindow() {
         Stage stage = (Stage) addButton.getScene().getWindow();
-//        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-//            @Override
-//            public void handle(WindowEvent event) {
-//                System.out.println("so");
-//            }
-//        });
-
         stage.close();
     }
 
