@@ -27,7 +27,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.loader.Loader;
 
 
 @Getter
@@ -38,6 +37,7 @@ public class IndexController {
 
     @FXML
     private URL location;
+
 
     @FXML
     private Tab workHour;
@@ -126,6 +126,7 @@ public class IndexController {
 
 //        Sprawdzanie czy wiersz jest zaznaczony
         selectionRowListener();
+
     }
 
     private void selectionRowListener() {
@@ -204,45 +205,16 @@ public class IndexController {
             stage.show();
             return fxmlLoader;
         } catch (IOException e) {
-            informationAboutFailureToAddToTheDatabase(e, failureOpeningTitle);
+            AllertController.informationAboutFailureToAddToTheDatabase(e, failureOpeningTitle);
             e.printStackTrace();
         }
         return fxmlLoader;
     }
 
-    // Alert błędu z detalami
-    private void informationAboutFailureToAddToTheDatabase(Exception e, String s) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Wystąpił błąd");
-        alert.setHeaderText("Nie udało się wykonać operacji");
-        alert.setContentText(s);
 
-// Create expandable Exception.
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        String exceptionText = sw.toString();
 
-        Label label = new Label("Bład:");
 
-        TextArea textArea = new TextArea(exceptionText);
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
 
-        textArea.setMaxWidth(Double.MAX_VALUE);
-        textArea.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setVgrow(textArea, Priority.ALWAYS);
-        GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-        GridPane expContent = new GridPane();
-        expContent.setMaxWidth(Double.MAX_VALUE);
-        expContent.add(label, 0, 0);
-        expContent.add(textArea, 0, 1);
-
-// Set expandable Exception into the dialog pane.
-        alert.getDialogPane().setExpandableContent(expContent);
-        alert.showAndWait();
-    }
 
     private void assignmentOfAcolumnInAtableAoAColumnInadatabase(String exceptionTitle) {
         this.month = month;
@@ -262,7 +234,7 @@ public class IndexController {
             //     Wypełnienie tabeli bazą danych
             table.setItems(loadDataFromDB("select * FROM work.workhour where  month(`hourTableFrom`) = " + month.getValue() + ";"));
         } catch (SQLException e) {
-            informationAboutFailureToAddToTheDatabase(e, exceptionTitle);
+            AllertController.informationAboutFailureToAddToTheDatabase(e, exceptionTitle);
             e.printStackTrace();
         }
     }
@@ -284,7 +256,7 @@ public class IndexController {
                 sumCollumn("hourTableNadgodziny", sqlParameterMonth);
                 sumCollumn("hourTableWorkHour", sqlParameterMonth);
             } catch (SQLException e1) {
-                informationAboutFailureToAddToTheDatabase(e1, "Nie udało się wykonać instrukcji SQL");
+                AllertController.informationAboutFailureToAddToTheDatabase(e1, "Nie udało się wykonać instrukcji SQL");
             }
         });
 
@@ -292,13 +264,10 @@ public class IndexController {
 
     private void sumCollumn(String collumn, Object month) throws SQLException {
         Connection connection = null;
-        System.out.println(connection + "sum connection");
-        System.out.println(month.toString());
-        System.out.println(collumn.toString());
-        try {
+          try {
             connection = ConnectionManager.getConnection();
         } catch (SQLException e) {
-            informationAboutFailureToAddToTheDatabase(e, "Nie udało się uzupełnić pola sumowania");
+            AllertController.informationAboutFailureToAddToTheDatabase(e, "Nie udało się uzupełnić pola sumowania");
         }
         PreparedStatement preparedStatement = connection.prepareStatement("select cast(sum(`" + collumn + "`) as time) FROM work.workhour  where  month(`hourTableFrom`) = " + month + ";");
         ResultSet rs = preparedStatement.executeQuery();
@@ -319,20 +288,7 @@ public class IndexController {
         refreshButton();
     }
 
-    //    Zapisanie do stringa zaznaczongeo wierza w tabeli.
-    private String printSelectedRow() {
 
-        String id = String.valueOf(table.getSelectionModel().getSelectedItem().getHourTableDayId());
-        String rozpoczecie = table.getSelectionModel().getSelectedItem().getHourTableFrom().toString();
-        String zakonczenie = table.getSelectionModel().getSelectedItem().getHourTableTo().toString();
-        String liczbaGodzin = table.getSelectionModel().getSelectedItem().getHourTableWorkHour().toString();
-        String liczbaNadgodzin = table.getSelectionModel().getSelectedItem().getHourTableNadgodziny().toString();
-        String newLine = System.getProperty("line.separator");
-        StringBuilder stringBuilder = new StringBuilder("id = ");
-        String printedString = stringBuilder.append(id).append(newLine).append("Rozpoczęcie pracy = ").append(rozpoczecie).append(newLine).append("Zakończenie pracy = ").append(zakonczenie).append(newLine).append("Liczba godzin pracy = ").append(liczbaGodzin).append(newLine).append("Liczba nadgodzin = ").append(liczbaNadgodzin).toString();
-
-        return printedString;
-    }
 
 
     private int flagSelectedRow(String title, String header, String content) {
@@ -340,14 +296,12 @@ public class IndexController {
         boolean flag = false;
         //           Pobranie indexu zaznaczonego wiersza
         try {
-
-
             index = table.getSelectionModel().getSelectedItem().getHourTableDayId();
         } catch (Exception e) {
 //                    Wywołanie informacji o błędzie nie zaznaczenia wiersza
-            shortAlertinformation(Alert.AlertType.ERROR, title,
-                    header,
-                    content);
+           AllertController.shortAlertinformation(Alert.AlertType.ERROR, title,
+                   header,
+                   content);
 
         }
 
@@ -382,14 +336,14 @@ public class IndexController {
                     Connection connection = ConnectionManager.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement("delete FROM work.workhour where hourTableDayId = " + index + ";");
                     preparedStatement.execute();
-                    shortAlertinformation(Alert.AlertType.INFORMATION, "Usuwanie", "Usunięcie wiersza powiodło się.", printSelectedRow());
+                    AllertController.shortAlertinformation(Alert.AlertType.INFORMATION, "Usuwanie", "Usunięcie wiersza powiodło się.", printSelectedRow());
 
                     //                    Aktualizacja tabeli.
                     assignmentOfAcolumnInAtableAoAColumnInadatabase("Nie udało się zaktualizować tabeli po usunięciu wiersza.");
                     index = 0;
 
                 } catch (SQLException e) {
-                    informationAboutFailureToAddToTheDatabase(e, "Nie udało się nawiązać połączenia");
+                    AllertController.informationAboutFailureToAddToTheDatabase(e, "Nie udało się nawiązać połączenia");
                 }
             } else {// ... user chose CANCEL or closed the dialog
             }
@@ -404,12 +358,7 @@ public class IndexController {
         });
     }
 
-    private void editButtonOnNotSelectedRow() {
-        workHourEdit.setOnAction((event) -> {
-            shortAlertinformation(Alert.AlertType.ERROR, "Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
-                    "zaznaczyć wiersz który ma być usunięty.");
-        });
-    }
+
 
     private void editButton(int number) {
 //        Opcja przy zaznaczonym wierszu
@@ -425,8 +374,8 @@ public class IndexController {
 //            Opcja przy niezaznaczonym wierszu
         } else if (number == 2) {
             workHourEdit.setOnAction((event1) -> {
-                shortAlertinformation(Alert.AlertType.ERROR, "Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
-                        "zaznaczyć wiersz który ma być usunięty.");
+                AllertController.shortAlertinformation(Alert.AlertType.ERROR, "Błąd!", "Brak zaznaczonego wiersza.", "Przed wykoneniem polecenia muszisz " +
+                        "zaznaczyć wiersz który ma być edytowany.");
             });
 
         }
@@ -440,19 +389,24 @@ public class IndexController {
         });
     }
 
-    private void shortAlertinformation(Alert.AlertType alertType, String title, String header, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+
+        //    Zapisanie do stringa zaznaczongeo wierza w tabeli.
+    protected String printSelectedRow() {
+        IndexController indexController = new IndexController();
+        ;
+        String id = String.valueOf(table.getSelectionModel().getSelectedItem().getHourTableDayId());
+        String rozpoczecie = table.getSelectionModel().getSelectedItem().getHourTableFrom().toString();
+        String zakonczenie = table.getSelectionModel().getSelectedItem().getHourTableTo().toString();
+        String liczbaGodzin = table.getSelectionModel().getSelectedItem().getHourTableWorkHour().toString();
+        String liczbaNadgodzin = table.getSelectionModel().getSelectedItem().getHourTableNadgodziny().toString();
+        String newLine = System.getProperty("line.separator");
+        StringBuilder stringBuilder = new StringBuilder("id = ");
+        String printedString = stringBuilder.append(id).append(newLine).append("Rozpoczęcie pracy = ").append(rozpoczecie).append(newLine).append("Zakończenie pracy = ").append(zakonczenie).append(newLine).append("Liczba godzin pracy = ").append(liczbaGodzin).append(newLine).append("Liczba nadgodzin = ").append(liczbaNadgodzin).toString();
+
+        return printedString;
     }
 
-    public EntityWorkDay selectedEntity() {
-        EntityWorkDay entityWorkDay = table.getSelectionModel().getSelectedItem();
 
-        return entityWorkDay;
-    }
 
 
 }
